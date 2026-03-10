@@ -1,0 +1,5 @@
+id,first_name,last_name,email,phone,type,role,department,status
+69a267e0afab4f03daa7a823,David,Williams,david.williams@church.com,(416) 555-0201,staff,pastor,pastoral,active
+69a267e0afab4f03daa7a825,James,Thompson,james.thompson@church.com,(416) 555-0204,volunteer,youth_director,youth,active
+69a267e0afab4f03daa7a826,Lisa,Martinez,lisa.martinez@church.com,(416) 555-0206,volunteer,administrative,administrative,active
+69a267e0afab4f03daa7a824,Emily,Rodriguez,emily.rodriguez@church.com,(416) 555-0202,staff,worship_leader,worship,active

@@ -1,0 +1,3 @@
+id,first_name,last_name,email,phone,first_visit_date,last_visit_date,visit_count,status
+69a267e0afab4f03daa7a828,Sarah,Johnson,sarah.j@email.com,(416) 555-0102,2026-02-28,2026-02-27,2,returning
+69a267e0afab4f03daa7a829,Michael,Chen,michael.chen@email.com,(416) 555-0103,2026-01-10,2026-02-27,7,converted_member

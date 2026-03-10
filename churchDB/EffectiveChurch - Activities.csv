@@ -1,0 +1,10 @@
+id,type,subject,due_date,location,event_category,responsible_person,expected_attendance,completed
+69a34b8fdd925951ff9591ee,call,,,,,,,FALSE
+699e4de2029ff1819a3badcf,call,Discovery call with Pinnacle Finance,,,,,,TRUE
+699e4de2029ff1819a3badd0,email,Sent proposal to HealthFirst,,,,,,TRUE
+699e4de2029ff1819a3badd1,meeting,Demo with GreenLeaf Retail team,2026-03-01,,,,,FALSE
+699e4de2029ff1819a3badd2,task,Follow up on Stellar renewal,2026-02-28,,,,,FALSE
+699e4de2029ff1819a3badd3,note,Budget approved for enterprise deal,,,,,,TRUE
+699e4de2029ff1819a3badd4,task,Prepare Q1 pipeline report,2026-03-05,,,,,FALSE
+699e4de2029ff1819a3badd5,email,Welcome email to Nova Consulting,,,,,,TRUE
+699e4de2029ff1819a3badd6,task,Schedule quarterly business review,2026-03-10,,,,,FALSE
