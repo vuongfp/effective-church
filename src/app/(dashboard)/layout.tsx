@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { Church, Sparkles, LogOut, Globe, Menu, X, Users, Briefcase, LayoutDashboard, UserPlus, CalendarDays } from "lucide-react"
+import { Church, Sparkles, LogOut, Globe, Menu, X, Users, Briefcase, LayoutDashboard, UserPlus, CalendarDays, FileText, Globe2 } from "lucide-react"
 import QueryProvider from "@/components/providers/QueryProvider"
 import { LanguageProvider } from "@/components/i18n/LanguageContext"
 
@@ -63,6 +63,15 @@ export default async function DashboardLayout({
                         <a href="/events" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150 justify-start">
                             <CalendarDays className={`w-[18px] h-[18px] shrink-0`} />
                             <span>Events</span>
+                        </a>
+                        <a href="/posts" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150 justify-start">
+                            <FileText className={`w-[18px] h-[18px] shrink-0`} />
+                            <span>Tin Tức (CMS)</span>
+                        </a>
+                        <div className="border-t border-white/10 my-2" />
+                        <a href="/" target="_blank" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150 justify-start">
+                            <Globe2 className={`w-[18px] h-[18px] shrink-0`} />
+                            <span>Trang Công Khai ↗</span>
                         </a>
                     </nav>
 
