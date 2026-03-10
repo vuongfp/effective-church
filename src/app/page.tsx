@@ -287,7 +287,10 @@ export default async function HomePage() {
                         <div className="flex flex-col items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-indigo-800 flex items-center justify-center"><Phone className="w-5 h-5 text-indigo-300" /></div>
                             <p className="font-semibold">Điện Thoại</p>
-                            <p className="text-indigo-200 text-sm">Pastor Ninh Tran<br />416-658-1620</p>
+                            <div className="text-indigo-200 text-sm text-center space-y-1.5">
+                                <p><span className="text-indigo-400 text-xs block">Senior Pastor</span>Ninh Tran<br /><a href="tel:4166581620" className="hover:text-white transition-colors">416-658-1620</a></p>
+                                <p><span className="text-indigo-400 text-xs block">Assistant Pastor</span>Jackie Vuong<br /><a href="tel:4376050069" className="hover:text-white transition-colors">437-605-0069</a></p>
+                            </div>
                         </div>
                         <div className="flex flex-col items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-indigo-800 flex items-center justify-center"><Mail className="w-5 h-5 text-indigo-300" /></div>
