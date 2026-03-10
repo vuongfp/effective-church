@@ -1,20 +1,22 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+export type LangCode = "vi" | "en";
+
 interface LanguageContextType {
-  lang: string;
-  setLang: (l: string) => void;
+  lang: LangCode;
+  setLang: (l: LangCode) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType>({ lang: "en", setLang: () => { } });
+const LanguageContext = createContext<LanguageContextType>({ lang: "vi", setLang: () => { } });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState(() => {
-    if (typeof window === "undefined") return "en";
-    return localStorage.getItem("church_lang") || "en";
+  const [lang, setLang] = useState<LangCode>(() => {
+    if (typeof window === "undefined") return "vi";
+    return (localStorage.getItem("church_lang") as LangCode) || "vi";
   });
 
-  const changeLang = (l: string) => {
+  const changeLang = (l: LangCode) => {
     setLang(l);
     if (typeof window !== "undefined") {
       localStorage.setItem("church_lang", l);
