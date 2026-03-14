@@ -18,16 +18,15 @@ import { useLang } from "@/components/i18n/LanguageContext";
 import { t } from "@/components/i18n/translations";
 import { createPageUrl } from "@/utils";
 import Link from "next/link";
+import { Member } from "@/types";
 
-const STATUS_LABELS = {
+const STATUS_LABELS: Record<string, Record<string, string>> = {
   en: { active: "Active", inactive: "Inactive" },
   vi: { active: "Hoạt động", inactive: "Không HĐ" },
-  fr: { active: "Actif", inactive: "Inactif" },
 };
-const MARITAL_LABELS = {
+const MARITAL_LABELS: Record<string, Record<string, string>> = {
   en: { Single: "Single", Married: "Married", Widowed: "Widowed", Divorced: "Divorced" },
   vi: { Single: "Độc thân", Married: "Đã kết hôn", Widowed: "Góa", Divorced: "Ly hôn" },
-  fr: { Single: "Célibataire", Married: "Marié(e)", Widowed: "Veuf/Veuve", Divorced: "Divorcé(e)" },
 };
 
 interface SortIconProps {
@@ -45,7 +44,7 @@ const STATUS_COLORS = { active: "bg-emerald-100 text-emerald-700", inactive: "bg
 
 function calcAge(birthday: string | null | undefined): number | null {
   if (!birthday) return null;
-  const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+  const months: Record<string, number> = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
   const today = new Date();
   let d = new Date(birthday);
   // Handle "D-Mon-YY" or "DD-Mon-YYYY" format
@@ -53,7 +52,8 @@ function calcAge(birthday: string | null | undefined): number | null {
     const parts = birthday.split(/[-\/\s]/);
     if (parts.length === 3) {
       const day = parseInt(parts[0]);
-      const mon = months[parts[1].toLowerCase().slice(0, 3)];
+      const key = parts[1].toLowerCase().slice(0, 3);
+      const mon = months[key];
       let yr = parseInt(parts[2]);
       if (!isNaN(yr) && mon !== undefined) {
         if (yr < 100) yr = yr >= 26 ? 1900 + yr : 2000 + yr;
@@ -68,20 +68,7 @@ function calcAge(birthday: string | null | undefined): number | null {
   return age;
 }
 
-interface Member {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string | null;
-  phone: string | null;
-  sex: string | null;
-  marital_status: string | null;
-  birthday: string | null;
-  baptism: boolean;
-  address: string | null;
-  status: string;
-  created_at: string;
-}
+
 
 export default function ChurchMembers() {
   const supabase = createClient();
@@ -134,8 +121,8 @@ export default function ChurchMembers() {
       return matchSearch && matchSex && matchStatus && matchMarital && matchBaptism;
     });
     arr = [...arr].sort((a, b) => {
-      let va = a[sortCol] ?? "";
-      let vb = b[sortCol] ?? "";
+      let va = (a as any)[sortCol] ?? "";
+      let vb = (b as any)[sortCol] ?? "";
       if (typeof va === "boolean") va = va ? 1 : 0;
       if (typeof vb === "boolean") vb = vb ? 1 : 0;
       // Sort by age (computed)
@@ -220,10 +207,10 @@ export default function ChurchMembers() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={exportCSV}>
-                <Download className="w-4 h-4 mr-2" /> {lang === "vi" ? "Xuất CSV" : lang === "fr" ? "Exporter CSV" : "Export CSV"}
+                <Download className="w-4 h-4 mr-2" /> {lang === "vi" ? "Xuất CSV" : "Export CSV"}
               </Button>
               <Button variant="outline" onClick={() => setCsvOpen(true)}>
-                <Upload className="w-4 h-4 mr-2" /> {lang === "vi" ? "Nhập CSV" : lang === "fr" ? "Importer CSV" : "Import CSV"}
+                <Upload className="w-4 h-4 mr-2" /> {lang === "vi" ? "Nhập CSV" : "Import CSV"}
               </Button>
               <Button onClick={() => { setEditing(null); setShowForm(true); }} className="bg-violet-600 hover:bg-violet-700">
                 <Plus className="w-4 h-4 mr-2" /> {t("Add Member", lang)}
@@ -292,7 +279,7 @@ export default function ChurchMembers() {
                         { col: "sex", label: t("Gender", lang) },
                         { col: "marital_status", label: t("Marital Status", lang) },
                         { col: "birthday", label: t("Birthday", lang) },
-                        { col: "_age", label: lang === "vi" ? "Tuổi" : lang === "fr" ? "Âge" : "Age" },
+                        { col: "_age", label: lang === "vi" ? "Tuổi" : "Age" },
                         { col: "baptism", label: t("Baptism", lang) },
                         { col: "email", label: t("Email", lang) },
                         { col: "phone", label: t("Phone", lang) },
@@ -329,7 +316,7 @@ export default function ChurchMembers() {
                         <td className="px-3 py-3 text-slate-500">
                           {c.sex === "M" ? <span className="text-blue-600">♂ {t("Male", lang)}</span> : c.sex === "F" ? <span className="text-pink-600">♀ {t("Female", lang)}</span> : "—"}
                         </td>
-                        <td className="px-3 py-3 text-slate-500 whitespace-nowrap">{(MARITAL_LABELS[lang] || MARITAL_LABELS.en)[c.marital_status] || c.marital_status || "—"}</td>
+                        <td className="px-3 py-3 text-slate-500 whitespace-nowrap">{(MARITAL_LABELS[lang] || MARITAL_LABELS.en)[c.marital_status as any] || c.marital_status || "—"}</td>
                         <td className="px-3 py-3 text-slate-500 whitespace-nowrap">{c.birthday || "—"}</td>
                         <td className="px-3 py-3 text-slate-500 whitespace-nowrap text-center">{calcAge(c.birthday) ?? "—"}</td>
                         <td className="px-3 py-3">
@@ -339,8 +326,8 @@ export default function ChurchMembers() {
                         <td className="px-3 py-3 text-slate-500 whitespace-nowrap">{c.phone || "—"}</td>
                         <td className="px-3 py-3 text-slate-500 max-w-[160px] truncate">{c.address || "—"}</td>
                         <td className="px-3 py-3">
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[c.status] || STATUS_COLORS.active}`}>
-                            {(STATUS_LABELS[lang] || STATUS_LABELS.en)[c.status] || c.status}
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${(STATUS_COLORS as any)[c.status as any] || STATUS_COLORS.active}`}>
+                            {(STATUS_LABELS[lang] || STATUS_LABELS.vi)[c.status as any] || c.status}
                           </span>
                         </td>
                         <td className="px-3 py-3">
@@ -355,7 +342,7 @@ export default function ChurchMembers() {
               {/* Pagination */}
               <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-t border-slate-200">
                 <span className="text-xs text-slate-500">
-                  {lang === "vi" ? "Hiển thị" : lang === "fr" ? "Affichage" : "Showing"} {startIdx + 1}–{Math.min(endIdx, filtered.length)} {lang === "vi" ? "của" : lang === "fr" ? "de" : "of"} {filtered.length} {t("members", lang)}
+                  {lang === "vi" ? "Hiển thị" : "Showing"} {startIdx + 1}–{Math.min(endIdx, filtered.length)} {lang === "vi" ? "của" : "of"} {filtered.length} {t("members", lang)}
                 </span>
                 <div className="flex gap-1">
                   <button
@@ -363,7 +350,7 @@ export default function ChurchMembers() {
                     disabled={currentPage === 1}
                     className="px-2 py-1 rounded border border-slate-200 text-xs text-slate-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    ← {lang === "vi" ? "Trước" : lang === "fr" ? "Préc." : "Prev"}
+                    ← {lang === "vi" ? "Trước" : "Prev"}
                   </button>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
@@ -392,7 +379,7 @@ export default function ChurchMembers() {
                     disabled={currentPage === totalPages}
                     className="px-2 py-1 rounded border border-slate-200 text-xs text-slate-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {lang === "vi" ? "Tiếp" : lang === "fr" ? "Suiv." : "Next"} →
+                    {lang === "vi" ? "Tiếp" : "Next"} →
                   </button>
                 </div>
               </div>
@@ -408,7 +395,7 @@ export default function ChurchMembers() {
       <MemberForm
         open={showForm}
         onOpenChange={setShowForm}
-        member={editing}
+        member={editing as any}
         onSaved={() => { setShowForm(false); queryClient.invalidateQueries({ queryKey: ["contacts"] }); }}
       />
       <ContactCSVImport

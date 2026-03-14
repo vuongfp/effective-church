@@ -8,13 +8,17 @@ import { Button } from "@/components/ui/button";
 import { useLang } from "@/components/i18n/LanguageContext";
 
 import L from "leaflet";
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({ iconRetinaUrl: null, iconUrl: null, shadowUrl: null });
+if (typeof window !== "undefined") {
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  L.Icon.Default.mergeOptions({ iconRetinaUrl: null, iconUrl: null, shadowUrl: null });
+}
 
-function FitBounds({ members }) {
+function FitBounds({ members }: { members: any[] }) {
   const map = useMap();
   useEffect(() => {
-    const pts = members.filter(m => m.latitude && m.longitude).map(m => [m.latitude, m.longitude]);
+    const pts = members
+      .filter((m: any) => m.latitude != null && m.longitude != null && !isNaN(parseFloat(m.latitude)) && !isNaN(parseFloat(m.longitude)))
+      .map((m: any) => [parseFloat(m.latitude), parseFloat(m.longitude)] as [number, number]);
     if (pts.length > 0) {
       try {
         map.fitBounds(pts, { padding: [40, 40], animate: false });
@@ -27,19 +31,18 @@ function FitBounds({ members }) {
 const MARITAL_LABELS = {
   en: { Single: "Single", Married: "Married", Widowed: "Widowed", Divorced: "Divorced" },
   vi: { Single: "Độc thân", Married: "Đã kết hôn", Widowed: "Góa", Divorced: "Ly hôn" },
-  fr: { Single: "Célibataire", Married: "Marié(e)", Widowed: "Veuf/Veuve", Divorced: "Divorcé(e)" },
 };
 
 const POP_LABELS = {
   en: { male: "♂ Male", female: "♀ Female", active: "Active", inactive: "Inactive", yearsOld: "yrs old", onMap: "members on map", noCoords: "missing coordinates", geocodeBtn: "Geocode addresses", geocoding: "Geocoding...", filterGroup: "Filter group:", allGroups: "All", noMapTitle: "No member coordinates", noMapSub: 'Click "Geocode addresses" to auto-fetch coordinates', tip: "Click a dot to view member info. Purple = active, gray = inactive." },
   vi: { male: "♂ Nam", female: "♀ Nữ", active: "Hoạt động", inactive: "Không hoạt động", yearsOld: "tuổi", onMap: "thành viên trên bản đồ", noCoords: "chưa có tọa độ", geocodeBtn: "Geocode địa chỉ", geocoding: "Đang xử lý...", filterGroup: "Lọc nhóm:", allGroups: "Tất cả", noMapTitle: "Chưa có tọa độ thành viên", noMapSub: 'Nhấn "Geocode địa chỉ" để tự động lấy tọa độ', tip: "Click vào chấm tròn để xem thông tin thành viên. Màu tím = hoạt động, xám = không hoạt động." },
-  fr: { male: "♂ Homme", female: "♀ Femme", active: "Actif", inactive: "Inactif", yearsOld: "ans", onMap: "membres sur la carte", noCoords: "sans coordonnées", geocodeBtn: "Géocoder adresses", geocoding: "En cours...", filterGroup: "Filtrer groupe:", allGroups: "Tous", noMapTitle: "Aucune coordonnée membre", noMapSub: 'Cliquez "Géocoder adresses" pour obtenir les coordonnées', tip: "Cliquez sur un point pour voir les infos du membre. Violet = actif, gris = inactif." },
 };
 
-function getAge(birthday) {
+function getAge(birthday: string | null | undefined) {
   if (!birthday) return null;
   const today = new Date();
   const birth = new Date(birthday);
+  if (isNaN(birth.getTime())) return null; // Ensure valid date
   let age = today.getFullYear() - birth.getFullYear();
   if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
   return age;
@@ -62,8 +65,8 @@ export default function MemberMapView({ members, onMemberUpdated, groups = [] }:
 
   // Build a map of group ID -> group name
   const groupMap = useMemo(() => {
-    const map = {};
-    groups.forEach(g => { map[g.id] = g.name; });
+    const map: Record<string, string> = {};
+    groups.forEach((g: any) => { map[g.id] = g.name; });
     return map;
   }, [groups]);
 
@@ -89,13 +92,14 @@ export default function MemberMapView({ members, onMemberUpdated, groups = [] }:
   // Filter members by selected group
   const filteredMembers = useMemo(() => {
     if (selectedGroup === "all") return members;
-    return members.filter(m => selectedGroupMemberIds?.has(m.id));
+    return members.filter((m: any) => selectedGroupMemberIds?.has(m.id));
   }, [members, selectedGroup, selectedGroupMemberIds]);
 
-  const withCoords = filteredMembers.filter(m => m.latitude && m.longitude);
-  const withoutCoords = members.filter(m => m.address && (!m.latitude || !m.longitude));
+  const withCoords = filteredMembers.filter(m => m.latitude != null && m.longitude != null && !isNaN(parseFloat(m.latitude)) && !isNaN(parseFloat(m.longitude)))
+    .map(m => ({ ...m, latitude: parseFloat(m.latitude), longitude: parseFloat(m.longitude) }));
+  const withoutCoords = members.filter(m => m.address && (m.latitude == null || m.longitude == null || isNaN(parseFloat(m.latitude)) || isNaN(parseFloat(m.longitude))));
 
-  const geocodeAddress = async (address) => {
+  const geocodeAddress = async (address: string) => {
     const query = encodeURIComponent(address);
     const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&addressdetails=1`;
     const res = await fetch(url, { headers: { "Accept-Language": "en", "User-Agent": "ChurchCRM/1.0" } });
@@ -242,21 +246,17 @@ export default function MemberMapView({ members, onMemberUpdated, groups = [] }:
                       )}
                       {m.marital_status && (
                         <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">
-                          {ML[m.marital_status] || m.marital_status}
+                          {(ML as any)[m.marital_status] || m.marital_status}
                         </span>
                       )}
                     </div>
 
                     {/* Groups */}
-                    {Array.isArray(m.groups) && m.groups.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {m.groups.map(g => (
-                          <span key={g} className="inline-flex items-center gap-0.5 text-xs bg-violet-100 text-violet-700 rounded-full px-2 py-0.5">
-                            <Tag className="w-2.5 h-2.5" /> {groupMap[g] || g}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {m.groups?.map((g: string) => (
+                      <span key={g} className="inline-flex items-center gap-0.5 text-xs bg-violet-100 text-violet-700 rounded-full px-2 py-0.5">
+                        <Tag className="w-2.5 h-2.5" /> {groupMap[g as keyof typeof groupMap] || g}
+                      </span>
+                    ))}
 
                     {m.birthday && getAge(m.birthday) !== null && (
                       <p className="text-slate-500 text-xs">🎂 {getAge(m.birthday)} {L2.yearsOld}</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Church, LogOut, Users, LayoutDashboard, UserPlus, CalendarDays, FileText, Globe2 } from "lucide-react";
+import { Church, LogOut, Users, LayoutDashboard, UserPlus, CalendarDays, FileText, Globe2, Image as ImageIcon } from "lucide-react";
 import { useLang } from "@/components/i18n/LanguageContext";
 import { LangSwitcher } from "@/components/i18n/LangSwitcher";
 import { t } from "@/components/i18n/translations";
@@ -16,10 +16,11 @@ export default function DashboardSidebar({ userEmail }: Props) {
 
     const navItems = [
         { href: "/dashboard", icon: LayoutDashboard, label: t("nav_dashboard", lang) },
-        { href: "/members", icon: Users, label: t("nav_members", lang) },
-        { href: "/visitors", icon: UserPlus, label: t("nav_visitors", lang) },
-        { href: "/events", icon: CalendarDays, label: t("nav_events", lang) },
-        { href: "/posts", icon: FileText, label: t("nav_posts", lang) },
+        { href: "/dashboard/members", icon: Users, label: t("nav_members", lang) },
+        { href: "/dashboard/visitors", icon: UserPlus, label: t("nav_visitors", lang) },
+        { href: "/dashboard/events", icon: CalendarDays, label: t("nav_events", lang) },
+        { href: "/dashboard/posts", icon: FileText, label: t("nav_posts", lang) },
+        { href: "/dashboard/gallery", icon: ImageIcon, label: lang === "vi" ? "Thư viện ảnh" : "Gallery" },
     ];
 
     return (

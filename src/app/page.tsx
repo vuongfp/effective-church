@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { CalendarDays, MapPin, Clock, ChevronRight, BookOpen, Users, Heart, Phone, Mail, Facebook } from "lucide-react";
+import { CalendarDays, MapPin, Clock, ChevronRight, BookOpen, Users, Heart, Phone, Mail, Facebook, Image as ImageIcon } from "lucide-react";
+import GallerySection from "@/components/church/GallerySection";
 
 export const metadata = {
     title: "Hội Thánh Tin Lành Toronto | Effective CHURCH",
@@ -63,10 +64,6 @@ export default async function HomePage() {
                         <Link href="/tin-tuc" className="hover:text-indigo-600 transition-colors">Tin Tức</Link>
                         <Link href="/#contact" className="hover:text-indigo-600 transition-colors">Liên Hệ</Link>
                     </nav>
-                    <Link href="/login"
-                        className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
-                        Đăng Nhập
-                    </Link>
                 </div>
             </header>
 
@@ -273,6 +270,9 @@ export default async function HomePage() {
                 </section>
             )}
 
+            {/* ── GALLERY ─────────────────────────────────────────── */}
+            <GallerySection />
+
             {/* ── CONTACT ──────────────────────────────────────────── */}
             <section id="contact" className="py-24 bg-indigo-950 text-white">
                 <div className="max-w-5xl mx-auto px-6 text-center">
@@ -303,9 +303,6 @@ export default async function HomePage() {
                             className="flex items-center gap-2 bg-indigo-800 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
                             <Facebook className="w-4 h-4" /> Facebook
                         </a>
-                        <Link href="/login" className="flex items-center gap-2 bg-white text-indigo-900 font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-indigo-50 transition-colors">
-                            Đăng Nhập Quản Lý
-                        </Link>
                     </div>
                 </div>
             </section>
@@ -317,7 +314,6 @@ export default async function HomePage() {
                     <div className="flex gap-6">
                         <Link href="/tin-tuc" className="hover:text-white transition-colors">Tin Tức</Link>
                         <Link href="/#about" className="hover:text-white transition-colors">Giới Thiệu</Link>
-                        <Link href="/login" className="hover:text-white transition-colors">Đăng Nhập</Link>
                     </div>
                 </div>
             </footer>

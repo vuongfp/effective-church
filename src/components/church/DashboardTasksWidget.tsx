@@ -21,16 +21,16 @@ const STATUS_COLORS = {
   pending: "text-amber-500",
 };
 
-export default function DashboardTasksWidget({ tasks }) {
+export default function DashboardTasksWidget({ tasks }: { tasks: any[] }) {
   const { lang } = useLang();
 
   const topTasks = [...tasks]
     .filter(t => t.status !== "done")
-    .sort((a, b) => (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2))
+    .sort((a, b) => (PRIORITY_ORDER[b.priority as keyof typeof PRIORITY_ORDER] || 2) - (PRIORITY_ORDER[a.priority as keyof typeof PRIORITY_ORDER] || 2))
     .slice(0, 6);
 
-  const title = lang === "vi" ? "Nhiệm vụ ưu tiên cao" : lang === "fr" ? "Tâches prioritaires" : "High Priority Tasks";
-  const emptyMsg = lang === "vi" ? "Không có nhiệm vụ nào đang chờ" : lang === "fr" ? "Aucune tâche en attente" : "No pending tasks";
+  const title = lang === "vi" ? "Nhiệm vụ ưu tiên cao" : "High Priority Tasks";
+  const emptyMsg = lang === "vi" ? "Không có nhiệm vụ nào đang chờ" : "No pending tasks";
 
   return (
     <Card className="border-0 shadow-sm">
@@ -48,15 +48,15 @@ export default function DashboardTasksWidget({ tasks }) {
         ) : (
           <div className="space-y-2">
             {topTasks.map(task => {
-              const Icon = STATUS_ICONS[task.status] || Clock;
+              const Icon = STATUS_ICONS[task.status as keyof typeof STATUS_ICONS] || Clock;
               return (
                 <div key={task.id} className="flex items-start gap-2 py-1.5 border-b border-slate-50 last:border-0">
-                  <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${STATUS_COLORS[task.status] || "text-amber-500"}`} />
+                  <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${STATUS_COLORS[task.status as keyof typeof STATUS_COLORS] || "text-amber-500"}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{task.title}</p>
                     {task.due_date && <p className="text-xs text-slate-400">📅 {task.due_date}</p>}
                   </div>
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full shrink-0 ${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium}`}>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full shrink-0 ${PRIORITY_COLORS[task.priority as keyof typeof PRIORITY_COLORS] || PRIORITY_COLORS.medium}`}>
                     {task.priority}
                   </span>
                 </div>

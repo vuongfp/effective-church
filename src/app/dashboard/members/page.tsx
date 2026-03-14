@@ -51,14 +51,23 @@ export default function MembersPage() {
 
     const fetchData = useCallback(async () => {
         setLoading(true);
-        const [{ data: m }, { data: g }] = await Promise.all([
-            supabase.from("members").select("*").order("last_name", { ascending: true }),
-            supabase.from("groups").select("*"),
-        ]);
-        setMembers(m || []);
-        setGroups(g || []);
-        setLoading(false);
-    }, []);
+        try {
+            const [membersRes, groupsRes] = await Promise.all([
+                supabase.from("members").select("*").order("last_name", { ascending: true }),
+                supabase.from("groups").select("*"),
+            ]);
+            if (membersRes.error) console.error("Error fetching members:", membersRes.error);
+            if (groupsRes.error) console.error("Error fetching groups:", groupsRes.error);
+            setMembers(membersRes.data || []);
+            setGroups(groupsRes.data || []);
+        } catch (error) {
+            console.error("Exception fetching data:", error);
+            setMembers([]);
+            setGroups([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [supabase]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
 

@@ -22,7 +22,7 @@ const PERMISSIONS = [
   "view_reports"
 ];
 
-const getRoles = (lang) => [
+const getRoles = (lang: string) => [
   { value: "pastor", label: lang === "vi" ? "Mục sư" : "Pastor" },
   { value: "assistant_pastor", label: lang === "vi" ? "Phó mục sư" : "Assistant Pastor" },
   { value: "worship_leader", label: lang === "vi" ? "Trưởng ban ca ngợi" : "Worship Leader" },
@@ -35,7 +35,7 @@ const getRoles = (lang) => [
   { value: "other", label: lang === "vi" ? "Khác" : "Other" }
 ];
 
-const getDepartments = (lang) => [
+const getDepartments = (lang: string) => [
   { value: "pastoral", label: lang === "vi" ? "Mục vụ" : "Pastoral" },
   { value: "worship", label: lang === "vi" ? "Ca ngợi" : "Worship" },
   { value: "youth", label: lang === "vi" ? "Thanh niên" : "Youth" },
@@ -46,7 +46,7 @@ const getDepartments = (lang) => [
   { value: "other", label: lang === "vi" ? "Khác" : "Other" }
 ];
 
-const getLabels = (lang) => ({
+const getLabels = (lang: string) => ({
   firstName: lang === "vi" ? "Tên" : "First Name",
   lastName: lang === "vi" ? "Họ" : "Last Name",
   email: "Email",
@@ -65,7 +65,13 @@ const getLabels = (lang) => ({
   permissions: lang === "vi" ? "Quyền hạn" : "Permissions"
 });
 
-export default function StaffForm({ staff, onSaved, onCancel }) {
+interface StaffFormProps {
+  staff?: any | null;
+  onSaved?: () => void;
+  onCancel?: () => void;
+}
+
+export default function StaffForm({ staff, onSaved, onCancel }: StaffFormProps) {
   const { lang } = useLang();
   const labels = getLabels(lang);
   const title = staff ? (lang === "vi" ? "Cập nhật nhân viên" : "Update Staff") : (lang === "vi" ? "Thêm nhân viên mới" : "Add New Staff");
@@ -106,15 +112,14 @@ export default function StaffForm({ staff, onSaved, onCancel }) {
     }
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     mutation.mutate(data);
   };
 
-  const togglePermission = (permission) => {
+  const togglePermission = (permission: string) => {
     const perms = data.permissions || [];
     if (perms.includes(permission)) {
-      setData({ ...data, permissions: perms.filter(p => p !== permission) });
+      setData({ ...data, permissions: perms.filter((p: string) => p !== permission) });
     } else {
       setData({ ...data, permissions: [...perms, permission] });
     }
@@ -194,7 +199,7 @@ export default function StaffForm({ staff, onSaved, onCancel }) {
             onChange={(e) => setData({ ...data, start_date: e.target.value })}
             placeholder={labels.startDate}
           />
-          <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
+          <Select value={data.status || "active"} onValueChange={(v) => setData({ ...data, status: v })}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>

@@ -32,7 +32,7 @@ export default function FormModal({
   isSubmitting,
   submitLabel = "Save"
 }: FormModalProps) {
-  const handleOpenChange = (newOpen) => {
+  const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       onClose?.();
     }
@@ -48,7 +48,7 @@ export default function FormModal({
         <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="space-y-4 mt-2">
           {children}
           <DialogFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>
               Cancel
             </Button>
             <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={isLoading || isSubmitting}>

@@ -1,7 +1,15 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 
-export default function EmptyState({ icon: Icon, title, description, actionLabel, onAction }) {
+interface EmptyStateProps {
+  icon?: React.ElementType;
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}
+
+export default function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       {Icon && <Icon className="w-12 h-12 text-slate-300 mb-4" />}

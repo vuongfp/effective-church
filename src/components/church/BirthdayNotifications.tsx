@@ -11,6 +11,7 @@ function getNextBirthday(birthdayStr: string | null | undefined) {
   if (!birthdayStr) return null;
   const today = new Date();
   const bday = parseISO(birthdayStr);
+  if (isNaN(bday.getTime())) return null;
   const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
   if (thisYear < today) thisYear.setFullYear(today.getFullYear() + 1);
   return { date: thisYear, daysUntil: differenceInDays(thisYear, today) };
@@ -20,6 +21,7 @@ function getNextAnniversary(memberSinceStr: string | null | undefined) {
   if (!memberSinceStr) return null;
   const today = new Date();
   const since = parseISO(memberSinceStr);
+  if (isNaN(since.getTime())) return null;
   const years = today.getFullYear() - since.getFullYear();
   const nextAnniv = new Date(today.getFullYear(), since.getMonth(), since.getDate());
   if (nextAnniv < today) {
@@ -81,12 +83,12 @@ export default function BirthdayNotifications() {
   const upcoming = notifications.filter(n => n.daysUntil > 0);
   const visibleItems = expanded ? notifications : notifications.slice(0, 3);
 
-  const labelBirthday = { en: "Birthday", vi: "Sinh nhật", fr: "Anniversaire" }[lang] || "Birthday";
-  const labelAnniversary = { en: "Church Anniversary", vi: "Kỷ niệm gia nhập", fr: "Anniversaire d'église" }[lang] || "Church Anniversary";
-  const labelToday = { en: "Today!", vi: "Hôm nay!", fr: "Aujourd'hui!" }[lang];
+  const labelBirthday = { en: "Birthday", vi: "Sinh nhật" }[lang] || "Birthday";
+  const labelAnniversary = { en: "Church Anniversary", vi: "Kỷ niệm gia nhập" }[lang] || "Church Anniversary";
+  const labelToday = { en: "Today!", vi: "Hôm nay!" }[lang];
   const labelDays = (n: number) => n === 1
-    ? ({ en: "Tomorrow", vi: "Ngày mai", fr: "Demain" }[lang])
-    : `${n} ${({ en: "days", vi: "ngày nữa", fr: "jours" }[lang])}`;
+    ? ({ en: "Tomorrow", vi: "Ngày mai" }[lang])
+    : `${n} ${({ en: "days", vi: "ngày nữa" }[lang])}`;
 
   return (
     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-4 relative">
@@ -96,7 +98,7 @@ export default function BirthdayNotifications() {
       <div className="flex items-center gap-2 mb-3">
         <Gift className="w-5 h-5 text-amber-500" />
         <span className="font-semibold text-amber-800 text-sm">
-          {lang === "vi" ? "Nhắc nhở sắp tới" : lang === "fr" ? "Rappels à venir" : "Upcoming Reminders"}
+          {lang === "vi" ? "Nhắc nhở sắp tới" : "Upcoming Reminders"}
         </span>
         <span className="ml-1 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full font-medium">{notifications.length}</span>
       </div>
@@ -114,7 +116,7 @@ export default function BirthdayNotifications() {
               <p className="text-sm font-medium text-slate-800 group-hover:text-violet-600 transition-colors">{n.name}</p>
               <p className="text-xs text-slate-400">
                 {n.type === "birthday" ? labelBirthday : `${labelAnniversary}${n.years ? ` (${n.years}y)` : ""}`}
-                {" · "}{format(n.date, "MMM d")}
+                {" · "}{n.date && !isNaN(n.date.getTime()) ? format(n.date, "MMM d") : ""}
               </p>
             </div>
             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${n.daysUntil === 0 ? "bg-rose-100 text-rose-600" : "bg-amber-100 text-amber-700"}`}>
@@ -131,8 +133,8 @@ export default function BirthdayNotifications() {
         >
           {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           {expanded
-            ? (lang === "vi" ? "Thu gọn" : lang === "fr" ? "Réduire" : "Show less")
-            : `+${notifications.length - 3} ${lang === "vi" ? "thêm" : lang === "fr" ? "de plus" : "more"}`
+            ? (lang === "vi" ? "Thu gọn" : "Show less")
+            : `+${notifications.length - 3} ${lang === "vi" ? "thêm" : "more"}`
           }
         </button>
       )}

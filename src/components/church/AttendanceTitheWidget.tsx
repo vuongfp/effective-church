@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
-const fmt = (v) => {
+const fmt = (v: any) => {
   if (v === 0) return "—";
   return `$${v.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-function parseDate(dateStr) {
+function parseDate(dateStr: any) {
   if (!dateStr) return null;
   // Handle "Sunday, 07-01-2024" format
   const match = String(dateStr).match(/(\d{2})-(\d{2})-(\d{4})$/);
@@ -18,7 +18,7 @@ function parseDate(dateStr) {
   return new Date(dateStr);
 }
 
-function getYear(dateStr) {
+function getYear(dateStr: any) {
   try {
     const d = parseDate(dateStr);
     return d ? d.getFullYear() : null;
@@ -27,7 +27,7 @@ function getYear(dateStr) {
   }
 }
 
-function getWeekNumber(dateStr) {
+function getWeekNumber(dateStr: any) {
   try {
     const date = parseDate(dateStr);
     if (!date) return null;
@@ -35,13 +35,13 @@ function getWeekNumber(dateStr) {
     const dayNum = d.getUTCDay() || 7;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   } catch {
     return null;
   }
 }
 
-export default function AttendanceTitheWidget({ records, lang }) {
+export default function AttendanceTitheWidget({ records, lang }: { records: any[], lang: string }) {
   // Filter 2026 data only (current year)
   const currentYearRecords = records.filter((r) => getYear(r.date) === 2026);
 
@@ -53,12 +53,12 @@ export default function AttendanceTitheWidget({ records, lang }) {
       const label = `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`;
       return { date: label, attendance: r.attendance || 0, tithe: r.tithe_cad || r.tithe_offering || 0, _ts: d.getTime() };
     })
-    .filter(Boolean)
+    .filter((v): v is any => !!v)
     .sort((a, b) => a._ts - b._ts);
 
   // Calculate totals
-  const totalAttendance = chartData.reduce((sum, w) => sum + w.attendance, 0);
-  const totalTithe = chartData.reduce((sum, w) => sum + w.tithe, 0);
+  const totalAttendance = chartData.reduce((sum: number, w: any) => sum + w.attendance, 0);
+  const totalTithe = chartData.reduce((sum: number, w: any) => sum + w.tithe, 0);
 
 
   const labels = {
@@ -82,7 +82,7 @@ export default function AttendanceTitheWidget({ records, lang }) {
     }
   };
 
-  const L = labels[lang] || labels.en;
+  const L = labels[lang as keyof typeof labels] || labels.en;
 
   return (
     <Card className="border-0 shadow-sm">
@@ -93,12 +93,12 @@ export default function AttendanceTitheWidget({ records, lang }) {
       <CardContent className="space-y-4">
         {/* Summary */}
         <div className="grid grid-cols-2 gap-4">
-          
 
 
 
 
-          
+
+
 
 
 
@@ -107,28 +107,28 @@ export default function AttendanceTitheWidget({ records, lang }) {
 
         {/* Weekly chart */}
         {chartData.length > 0 &&
-        <div>
+          <div>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={chartData} barSize={16} barGap={8}>
                 <XAxis
-                dataKey="date"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 9, fill: "#94a3b8" }}
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={50} />
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 9, fill: "#94a3b8" }}
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={50} />
 
                 <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} />
                 <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} />
                 <Tooltip
-                contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                formatter={(value, name) => {
-                  if (name === "attendance") return [value, L.attendance];
-                  return [fmt(value), L.tithe];
-                }}
-                labelFormatter={(label) => label} />
+                  contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                  formatter={(value, name) => {
+                    if (name === "attendance") return [value, L.attendance];
+                    return [fmt(value), L.tithe];
+                  }}
+                  labelFormatter={(label) => label} />
 
                 <Bar yAxisId="left" dataKey="attendance" fill="#3b82f6" radius={[4, 4, 0, 0]} name="attendance" />
                 <Bar yAxisId="right" dataKey="tithe" fill="#10b981" radius={[4, 4, 0, 0]} name="tithe" />
@@ -142,7 +142,7 @@ export default function AttendanceTitheWidget({ records, lang }) {
         }
 
         {chartData.length > 0 &&
-        <div className="pt-3 border-t border-slate-100 text-xs text-slate-500">
+          <div className="pt-3 border-t border-slate-100 text-xs text-slate-500">
             {L.weeks}: {chartData.length}
           </div>
         }

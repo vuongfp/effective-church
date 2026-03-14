@@ -34,16 +34,14 @@ const EVENT_COLORS = {
 const EVENT_LABELS = {
   en: { meeting: "Service", call: "Group", email: "Email", task: "Task", note: "Note" },
   vi: { meeting: "Phụng vụ", call: "Nhóm", email: "Email", task: "Nhiệm vụ", note: "Ghi chú" },
-  fr: { meeting: "Service", call: "Groupe", email: "Email", task: "Tâche", note: "Note" },
 };
 
 const DAY_HEADERS = {
   en: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
   vi: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
-  fr: ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"],
 };
 
-function buildGoogleCalendarUrl(event) {
+function buildGoogleCalendarUrl(event: any) {
   const title = encodeURIComponent(event.subject || "Sự kiện");
   const details = encodeURIComponent(event.description || "");
   const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
@@ -55,12 +53,12 @@ function buildGoogleCalendarUrl(event) {
   return `${base}&text=${title}&details=${details}`;
 }
 
-export default function ChurchCalendarWidget({ events = [] }) {
+export default function ChurchCalendarWidget({ events = [] }: { events: any[] }) {
   const { lang } = useLang();
   const [current, setCurrent] = useState(new Date());
   const [view, setView] = useState("month"); // "month" | "week"
-  const [selected, setSelected] = useState(null);
-  const dateLocale = lang === "vi" ? vi : lang === "fr" ? fr : enUS;
+  const [selected, setSelected] = useState<Date | null>(null);
+  const dateLocale = lang === "vi" ? vi : enUS;
   const labels = EVENT_LABELS[lang] || EVENT_LABELS.en;
   const dayHeaders = DAY_HEADERS[lang] || DAY_HEADERS.en;
 
@@ -70,9 +68,9 @@ export default function ChurchCalendarWidget({ events = [] }) {
   const days =
     view === "month"
       ? eachDayOfInterval({
-          start: startOfWeek(startOfMonth(current), { weekStartsOn: 1 }),
-          end: endOfWeek(endOfMonth(current), { weekStartsOn: 1 }),
-        })
+        start: startOfWeek(startOfMonth(current), { weekStartsOn: 1 }),
+        end: endOfWeek(endOfMonth(current), { weekStartsOn: 1 }),
+      })
       : eachDayOfInterval({ start: weekStart, end: weekEnd });
 
   const prev = () =>
@@ -80,8 +78,8 @@ export default function ChurchCalendarWidget({ events = [] }) {
   const next = () =>
     view === "month" ? setCurrent(addMonths(current, 1)) : setCurrent(addWeeks(current, 1));
 
-  const eventsOnDay = (day) =>
-    events.filter((e) => e.due_date && isSameDay(new Date(e.due_date), day));
+  const eventsOnDay = (day: Date) =>
+    events.filter((e: any) => e.due_date && isSameDay(new Date(e.due_date), day));
 
   const selectedDayEvents = selected ? eventsOnDay(selected) : [];
 
@@ -96,20 +94,20 @@ export default function ChurchCalendarWidget({ events = [] }) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
             <Calendar className="w-4 h-4 text-indigo-500" />
-            {lang === "vi" ? "Lịch Hội Thánh" : lang === "fr" ? "Calendrier de l'Église" : "Church Calendar"}
+            {lang === "vi" ? "Lịch Hội Thánh" : "Church Calendar"}
           </CardTitle>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setView("month")}
               className={`text-xs px-2 py-1 rounded-lg transition-colors ${view === "month" ? "bg-indigo-100 text-indigo-700 font-medium" : "text-slate-400 hover:text-slate-700"}`}
             >
-              {lang === "vi" ? "Tháng" : lang === "fr" ? "Mois" : "Month"}
+              {lang === "vi" ? "Tháng" : "Month"}
             </button>
             <button
               onClick={() => setView("week")}
               className={`text-xs px-2 py-1 rounded-lg transition-colors ${view === "week" ? "bg-indigo-100 text-indigo-700 font-medium" : "text-slate-400 hover:text-slate-700"}`}
             >
-              {lang === "vi" ? "Tuần" : lang === "fr" ? "Semaine" : "Week"}
+              {lang === "vi" ? "Tuần" : "Week"}
             </button>
           </div>
         </div>
@@ -139,12 +137,12 @@ export default function ChurchCalendarWidget({ events = [] }) {
         <div className="grid grid-cols-7 gap-0.5">
           {days.map((day) => {
             const dayEvents = eventsOnDay(day);
-            const isSelected = selected && isSameDay(day, selected);
+            const isSelected = selected ? isSameDay(day, selected) : false;
             const inMonth = isSameMonth(day, current);
             return (
               <button
                 key={day.toISOString()}
-                onClick={() => setSelected(isSameDay(day, selected) ? null : day)}
+                onClick={() => setSelected((selected && isSameDay(day, selected)) ? null : day)}
                 className={`
                   relative flex flex-col items-center rounded-lg py-1 text-xs transition-colors
                   ${isSelected ? "bg-indigo-600 text-white" : isToday(day) ? "bg-indigo-50 text-indigo-700 font-bold" : inMonth ? "hover:bg-slate-100 text-slate-700" : "text-slate-300"}
@@ -152,10 +150,10 @@ export default function ChurchCalendarWidget({ events = [] }) {
               >
                 <span className="font-medium">{format(day, "d")}</span>
                 <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center max-w-full px-0.5">
-                  {dayEvents.slice(0, 3).map((e, i) => (
+                  {dayEvents.slice(0, 3).map((e: any, i: number) => (
                     <span
                       key={i}
-                      className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : EVENT_COLORS[e.type] || "bg-slate-400"}`}
+                      className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : EVENT_COLORS[e.type as keyof typeof EVENT_COLORS] || "bg-slate-400"}`}
                     />
                   ))}
                 </div>
@@ -168,17 +166,17 @@ export default function ChurchCalendarWidget({ events = [] }) {
         {selected && (
           <div className="mt-4 border-t pt-3 space-y-2">
             <p className="text-xs font-semibold text-slate-600">
-              {format(selected, "EEEE, dd/MM/yyyy", { locale: dateLocale })}
+              {selected && format(selected, "EEEE, dd/MM/yyyy", { locale: dateLocale })}
             </p>
             {selectedDayEvents.length === 0 ? (
-               <p className="text-xs text-slate-400 text-center py-2">
-                 {t("No events", lang)}
-               </p>
-             ) : (
-              selectedDayEvents.map((ev) => (
+              <p className="text-xs text-slate-400 text-center py-2">
+                {t("No events", lang)}
+              </p>
+            ) : (
+              selectedDayEvents.map((ev: any) => (
                 <div key={ev.id} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-50">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${EVENT_COLORS[ev.type] || "bg-slate-400"}`} />
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${EVENT_COLORS[ev.type as keyof typeof EVENT_COLORS] || "bg-slate-400"}`} />
                     <div className="min-w-0">
                       <p className="text-xs font-medium text-slate-800 truncate">{ev.subject}</p>
                       {ev.description && (
@@ -188,11 +186,11 @@ export default function ChurchCalendarWidget({ events = [] }) {
                   </div>
                   <a
                     href={buildGoogleCalendarUrl(ev)}
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     className="shrink-0 flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium whitespace-nowrap"
-                     title={t("Add to Google Calendar", lang)}
-                    >
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium whitespace-nowrap"
+                    title={t("Add to Google Calendar", lang)}
+                  >
                     <ExternalLink className="w-3 h-3" />
                     GCal
                   </a>
@@ -206,8 +204,8 @@ export default function ChurchCalendarWidget({ events = [] }) {
         <div className="mt-3 flex flex-wrap gap-3 border-t pt-2">
           {Object.entries(labels).slice(0, 3).map(([key, label]) => (
             <div key={key} className="flex items-center gap-1">
-              <span className={`w-2 h-2 rounded-full ${EVENT_COLORS[key]}`} />
-              <span className="text-xs text-slate-400">{label}</span>
+              <span className={`w-2 h-2 rounded-full ${EVENT_COLORS[key as keyof typeof EVENT_COLORS]}`} />
+              <span className="text-xs text-slate-400">{label as string}</span>
             </div>
           ))}
         </div>

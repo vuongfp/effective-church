@@ -5,17 +5,16 @@ import { HandHeart } from "lucide-react";
 import { useLang } from "@/components/i18n/LanguageContext";
 
 const MONTH_LABELS = {
-  en: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-  vi: ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"],
-  fr: ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  vi: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
 };
 
 // Default monthly budget (can be adjusted)
 const MONTHLY_BUDGET = 16000;
 
-export default function DashboardOfferingChart({ records, year }) {
+export default function DashboardOfferingChart({ records, year }: { records: any[], year: number }) {
   const { lang } = useLang();
-  const months = MONTH_LABELS[lang] || MONTH_LABELS.en;
+  const months = (MONTH_LABELS[lang as keyof typeof MONTH_LABELS] || MONTH_LABELS.en) as string[];
 
   const monthly = months.map((label, idx) => {
     const monthRecs = records.filter(r => {
@@ -26,7 +25,7 @@ export default function DashboardOfferingChart({ records, year }) {
     return { label, total, budget: MONTHLY_BUDGET };
   });
 
-  const title = lang === "vi" ? "Dâng hiến theo tháng vs Ngân sách" : lang === "fr" ? "Dîmes mensuelles vs Budget" : "Monthly Tithes vs Budget";
+  const title = lang === "vi" ? "Dâng hiến theo tháng vs Ngân sách" : "Monthly Tithes vs Budget";
 
   return (
     <Card className="border-0 shadow-sm">
@@ -42,11 +41,11 @@ export default function DashboardOfferingChart({ records, year }) {
             <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} />
             <YAxis hide />
             <Tooltip
-              formatter={(v, name) => [`$${(v/1000).toFixed(1)}k`, name === "total" ? (lang === "vi" ? "Dâng hiến" : "Offering") : (lang === "vi" ? "Ngân sách" : "Budget")]}
+              formatter={(v: any, name: any) => [`$${(Number(v || 0) / 1000).toFixed(1)}k`, name === "total" ? (lang === "vi" ? "Dâng hiến" : "Offering") : (lang === "vi" ? "Ngân sách" : "Budget")]}
               contentStyle={{ borderRadius: 8, border: "none" }}
             />
-            <Bar dataKey="budget" fill="#e2e8f0" radius={[4,4,0,0]} name="budget" />
-            <Bar dataKey="total" radius={[4,4,0,0]} name="total">
+            <Bar dataKey="budget" fill="#e2e8f0" radius={[4, 4, 0, 0]} name="budget" />
+            <Bar dataKey="total" radius={[4, 4, 0, 0]} name="total">
               {monthly.map((entry, i) => (
                 <Cell key={i} fill={entry.total >= entry.budget ? "#10b981" : entry.total > 0 ? "#8b5cf6" : "#e2e8f0"} />
               ))}

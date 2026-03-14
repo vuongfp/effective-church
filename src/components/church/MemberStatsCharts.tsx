@@ -6,13 +6,15 @@ import { useLang } from "@/components/i18n/LanguageContext";
 
 const COLORS = ["#6366f1", "#ec4899", "#10b981", "#f59e0b", "#8b5cf6", "#06b6d4", "#ef4444", "#84cc16"];
 
-function getAge(birthday) {
+function getAge(birthday: string | null | undefined) {
   if (!birthday) return null;
-  const diff = Date.now() - new Date(birthday).getTime();
+  const d = new Date(birthday);
+  if (isNaN(d.getTime())) return null;
+  const diff = Date.now() - d.getTime();
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
 }
 
-export default function MemberStatsCharts({ contacts, groups }) {
+export default function MemberStatsCharts({ contacts, groups }: { contacts: any[], groups: any[] }) {
   const { lang } = useLang();
 
   // Age distribution
@@ -51,12 +53,12 @@ export default function MemberStatsCharts({ contacts, groups }) {
   const notInGroup = contacts.filter(c => !allMemberIdsInGroups.has(c.id)).length;
 
   const labels = {
-    age: lang === "vi" ? "Phân bố độ tuổi" : lang === "fr" ? "Répartition par âge" : "Age Distribution",
-    gender: lang === "vi" ? "Giới tính" : lang === "fr" ? "Genre" : "Gender",
-    marital: lang === "vi" ? "Hôn nhân" : lang === "fr" ? "État civil" : "Marital Status",
-    noGroup: lang === "vi" ? "Chưa có nhóm" : lang === "fr" ? "Sans groupe" : "Not in any group",
-    totalGroups: lang === "vi" ? "Tổng số nhóm" : lang === "fr" ? "Total groupes" : "Total Groups",
-    count: lang === "vi" ? "Số lượng" : lang === "fr" ? "Nombre" : "Count",
+    age: lang === "vi" ? "Phân bố độ tuổi" : "Age Distribution",
+    gender: lang === "vi" ? "Giới tính" : "Gender",
+    marital: lang === "vi" ? "Hôn nhân" : "Marital Status",
+    noGroup: lang === "vi" ? "Chưa có nhóm" : "Not in any group",
+    totalGroups: lang === "vi" ? "Tổng số nhóm" : "Total Groups",
+    count: lang === "vi" ? "Số lượng" : "Count",
   };
 
   return (
@@ -109,7 +111,7 @@ export default function MemberStatsCharts({ contacts, groups }) {
                 <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "none" }} />
-                <Bar dataKey="count" fill="#8b5cf6" radius={[4,4,0,0]} name={labels.count} />
+                <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} name={labels.count} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -124,8 +126,7 @@ export default function MemberStatsCharts({ contacts, groups }) {
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie data={genderData} dataKey="value" nameKey="name" cx="50%" cy="45%" outerRadius={40}
-                  label={({ name, value }) => `${name}: ${value}`} labelLine={false} 
-                  labelProps={{ fontSize: 10, fill: "#64748b" }}>
+                  label={({ name, value }) => `${name}: ${value}`} labelLine={false}>
                   {genderData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                 </Pie>
                 <Tooltip />
@@ -142,8 +143,7 @@ export default function MemberStatsCharts({ contacts, groups }) {
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie data={maritalData} dataKey="value" nameKey="name" cx="50%" cy="45%" outerRadius={40}
-                  label={({ name, value }) => `${name}: ${value}`} labelLine={false}
-                  labelProps={{ fontSize: 10, fill: "#64748b" }}>
+                  label={({ name, value }) => `${name}: ${value}`} labelLine={false}>
                   {maritalData.map((_, i) => <Cell key={i} fill={COLORS[(i + 3) % COLORS.length]} />)}
                 </Pie>
                 <Tooltip />

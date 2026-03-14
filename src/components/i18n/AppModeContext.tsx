@@ -1,14 +1,17 @@
 import React, { createContext, useContext, useState } from "react";
 
-const AppModeContext = createContext({ mode: "crm", setMode: () => {} });
+const AppModeContext = createContext<{ mode: string; setMode: (m: string) => void }>({
+  mode: "crm",
+  setMode: () => { }
+});
 
-export function AppModeProvider({ children }) {
-  const [mode, setMode] = useState(() => {
+export function AppModeProvider({ children }: { children: React.ReactNode }) {
+  const [mode, setMode] = useState<string>(() => {
     try { return localStorage.getItem("app_mode") || "crm"; } catch { return "crm"; }
   });
 
-  const changeMode = (m) => {
-    try { localStorage.setItem("app_mode", m); } catch {}
+  const changeMode = (m: string) => {
+    try { localStorage.setItem("app_mode", m); } catch { }
     setMode(m);
   };
 

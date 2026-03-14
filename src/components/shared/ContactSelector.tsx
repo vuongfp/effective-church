@@ -4,10 +4,23 @@ import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 
-export default function ContactSelector({ value, onChange, placeholder = "Search and select..." }) {
+interface Option {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+}
+
+interface ContactSelectorProps {
+  value?: string;
+  onChange: (contact: { id: string; name: string }) => void;
+  placeholder?: string;
+}
+
+export default function ContactSelector({ value, onChange, placeholder = "Search and select..." }: ContactSelectorProps) {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedName, setSelectedName] = useState("");
 
@@ -57,7 +70,7 @@ export default function ContactSelector({ value, onChange, placeholder = "Search
     }
   }, [value, options]);
 
-  const handleSelect = (option) => {
+  const handleSelect = (option: Option) => {
     onChange({ id: option.id, name: option.name });
     setSelectedName(option.name);
     setIsOpen(false);

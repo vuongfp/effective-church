@@ -4,10 +4,23 @@ import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 
-export default function AssigneeSelector({ value, onChange, placeholder = "Search and select..." }) {
+interface Option {
+  id: string;
+  name: string;
+  type: string;
+  email?: string | null;
+}
+
+interface AssigneeSelectorProps {
+  value?: string;
+  onChange: (assignee: { id: string; name: string }) => void;
+  placeholder?: string;
+}
+
+export default function AssigneeSelector({ value, onChange, placeholder = "Search and select..." }: AssigneeSelectorProps) {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedName, setSelectedName] = useState("");
 
@@ -24,7 +37,7 @@ export default function AssigneeSelector({ value, onChange, placeholder = "Searc
         const { data: staffData, error: staffErr } = await supabase.from('staff').select('*');
         if (staffErr) throw staffErr;
         const staff = staffData || [];
-        const volunteers = []; // Volunteer table merged or deprecated in Next.js schema
+        const volunteers: any[] = []; // Volunteer table merged or deprecated in Next.js schema
 
         const staffOptions = staff.map(s => ({
           id: s.id,
@@ -67,7 +80,7 @@ export default function AssigneeSelector({ value, onChange, placeholder = "Searc
     }
   }, [value, options]);
 
-  const handleSelect = (option) => {
+  const handleSelect = (option: Option) => {
     onChange({ id: option.id, name: option.name });
     setSelectedName(option.name);
     setIsOpen(false);

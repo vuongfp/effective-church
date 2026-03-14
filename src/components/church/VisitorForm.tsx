@@ -25,7 +25,7 @@ const LABELS = {
     notes: "Notes",
     wantContact: "Want to be contacted for follow-up"
   },
-  vn: {
+  vi: {
     updateVisitor: "Cập nhật khách",
     newVisitor: "Đăng ký khách mới",
     firstName: "Tên",
@@ -37,21 +37,15 @@ const LABELS = {
     notes: "Ghi chú",
     wantContact: "Muốn được liên hệ theo dõi"
   },
-  fr: {
-    updateVisitor: "Mettre à jour Visiteur",
-    newVisitor: "Enregistrer Nouveau Visiteur",
-    firstName: "Prénom",
-    lastName: "Nom",
-    email: "Email",
-    phone: "Numéro de téléphone",
-    firstVisitDate: "Date de première visite",
-    address: "Adresse",
-    notes: "Notes",
-    wantContact: "Souhaiter être contacté pour suivi"
-  }
 };
 
-export default function VisitorForm({ visitor, onSaved, onCancel }) {
+interface VisitorFormProps {
+  visitor?: any | null;
+  onSaved?: () => void;
+  onCancel?: () => void;
+}
+
+export default function VisitorForm({ visitor, onSaved, onCancel }: VisitorFormProps) {
   const { lang } = useLang();
   const labels = LABELS[lang] || LABELS.en;
   const [data, setData] = useState(visitor || {
@@ -84,8 +78,7 @@ export default function VisitorForm({ visitor, onSaved, onCancel }) {
     }
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     mutation.mutate(data);
   };
 
@@ -150,7 +143,7 @@ export default function VisitorForm({ visitor, onSaved, onCancel }) {
           <Checkbox
             id="contact"
             checked={data.interested_in_contact}
-            onCheckedChange={(checked) =>
+            onCheckedChange={(checked: boolean) =>
               setData({ ...data, interested_in_contact: checked })
             }
           />

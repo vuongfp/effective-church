@@ -47,9 +47,6 @@ export default async function TinTucPage({
                         <Link href="/tin-tuc" className="text-indigo-600 font-semibold">Tin Tức</Link>
                         <Link href="/#contact" className="hover:text-indigo-600 transition-colors">Liên Hệ</Link>
                     </nav>
-                    <Link href="/login" className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
-                        Đăng Nhập
-                    </Link>
                 </div>
             </header>
 
@@ -141,7 +138,7 @@ export default async function TinTucPage({
             </div>
 
             <footer className="bg-indigo-950 py-8 text-center text-sm text-indigo-400">
-                <p>© {new Date().getFullYear()} Hội Thánh Tin Lành Toronto · <Link href="/" className="hover:text-white">Trang Chủ</Link> · <Link href="/login" className="hover:text-white">Đăng Nhập</Link></p>
+                <p>© {new Date().getFullYear()} Hội Thánh Tin Lành Toronto · <Link href="/" className="hover:text-white">Trang Chủ</Link></p>
             </footer>
         </div>
     );

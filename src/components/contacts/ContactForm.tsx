@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import FormModal from "../shared/FormModal";
 import { X } from "lucide-react";
+import { Member } from "@/types";
 
 const EMPTY = {
   first_name: "", last_name: "", email: "", phone: "", company: "", role: "",
@@ -15,14 +16,21 @@ const EMPTY = {
   relationship: "", favorite_channel: "", groups: []
 };
 
-export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
-  const [form, setForm] = useState(EMPTY);
+interface ContactFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  contact?: Member | null;
+  onSaved: () => void;
+}
+
+export default function ContactForm({ open, onOpenChange, contact, onSaved }: ContactFormProps) {
+  const [form, setForm] = useState<Partial<Member>>(EMPTY);
   const [groupSearch, setGroupSearch] = useState("");
   const queryClient = useQueryClient();
 
   const supabase = createClient();
 
-  const { data: accounts = [] } = useQuery({
+  const { data: accounts = [] } = useQuery<any[]>({
     queryKey: ["accounts"],
     queryFn: async () => {
       // Return empty or fetch from members if accounts are unified
@@ -49,7 +57,7 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
   }, [contact, open]);
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Partial<Member>) => {
       if (contact) {
         const { error } = await supabase.from('members').update(data).eq('id', contact.id);
         if (error) throw error;
@@ -64,9 +72,9 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
     },
   });
 
-  const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
+  const set = (key: keyof Member, val: any) => setForm(prev => ({ ...prev, [key]: val }));
 
-  const toggleGroup = (groupId) => {
+  const toggleGroup = (groupId: string) => {
     setForm(prev => {
       const current = prev.groups || [];
       if (current.includes(groupId)) return { ...prev, groups: current.filter(g => g !== groupId) };
@@ -74,9 +82,9 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
     });
   };
 
-  const removeGroup = (groupId) => setForm(prev => ({ ...prev, groups: (prev.groups || []).filter(g => g !== groupId) }));
+  const removeGroup = (groupId: string) => setForm(prev => ({ ...prev, groups: (prev.groups || []).filter(g => g !== groupId) }));
 
-  const getGroupName = (groupId) => {
+  const getGroupName = (groupId: string) => {
     const group = groups.find(g => g.id === groupId);
     return group ? group.name : groupId;
   };
@@ -96,27 +104,27 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>First Name *</Label>
-          <Input value={form.first_name} onChange={e => set("first_name", e.target.value)} placeholder="John" />
+          <Input value={form.first_name || ""} onChange={e => set("first_name", e.target.value)} placeholder="John" />
         </div>
         <div>
           <Label>Last Name *</Label>
-          <Input value={form.last_name} onChange={e => set("last_name", e.target.value)} placeholder="Doe" />
+          <Input value={form.last_name || ""} onChange={e => set("last_name", e.target.value)} placeholder="Doe" />
         </div>
       </div>
 
       <div>
         <Label>Email *</Label>
-        <Input type="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="john@example.com" />
+        <Input type="email" value={form.email || ""} onChange={e => set("email", e.target.value)} placeholder="john@example.com" />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>Phone</Label>
-          <Input value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="+1 555 0100" />
+          <Input value={form.phone || ""} onChange={e => set("phone", e.target.value)} placeholder="+1 555 0100" />
         </div>
         <div>
           <Label>Role / Title</Label>
-          <Input value={form.role} onChange={e => set("role", e.target.value)} placeholder="CEO" />
+          <Input value={form.role || ""} onChange={e => set("role", e.target.value)} placeholder="CEO" />
         </div>
       </div>
 
@@ -133,12 +141,12 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
 
       <div>
         <Label>Company</Label>
-        <Input value={form.company} onChange={e => set("company", e.target.value)} placeholder="Acme Inc." />
+        <Input value={form.company || ""} onChange={e => set("company", e.target.value)} placeholder="Acme Inc." />
       </div>
 
       <div>
         <Label>Address</Label>
-        <Input value={form.address} onChange={e => set("address", e.target.value)} placeholder="123 Main St, City" />
+        <Input value={form.address || ""} onChange={e => set("address", e.target.value)} placeholder="123 Main St, City" />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -226,7 +234,7 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
 
       <div>
         <Label>Status</Label>
-        <Select value={form.status} onValueChange={v => set("status", v)}>
+        <Select value={form.status || "active"} onValueChange={v => set("status", v)}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="active">Active</SelectItem>
@@ -237,7 +245,7 @@ export default function ContactForm({ open, onOpenChange, contact, onSaved }) {
 
       <div>
         <Label>Notes</Label>
-        <Textarea value={form.notes} onChange={e => set("notes", e.target.value)} placeholder="Additional notes..." rows={3} />
+        <Textarea value={form.notes || ""} onChange={e => set("notes", e.target.value)} placeholder="Additional notes..." rows={3} />
       </div>
     </FormModal>
   );

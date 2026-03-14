@@ -16,7 +16,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 const MONTH_LABELS: Record<string, string[]> = {
     en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     vi: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
-    fr: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"],
 };
 
 interface StatCardProps {
@@ -69,9 +68,9 @@ function VisitorChart({ visitors, lang }: { visitors: any[]; lang: string }) {
         return { label, new: newCount, returning };
     });
 
-    const newLabel = lang === "vi" ? "Khách mới" : lang === "fr" ? "Nouveaux" : "New Visitors";
-    const returningLabel = lang === "vi" ? "Trở lại" : lang === "fr" ? "Retours" : "Returning";
-    const title = lang === "vi" ? "Khách thăm" : lang === "fr" ? "Visiteurs" : "Visitors";
+    const newLabel = lang === "vi" ? "Khách mới" : "New Visitors";
+    const returningLabel = lang === "vi" ? "Trở lại" : "Returning";
+    const title = lang === "vi" ? "Khách thăm" : "Visitors";
 
     return (
         <Card className="border-0 shadow-sm">
@@ -142,23 +141,21 @@ export default function DashboardPage() {
     const totalTitheThisYear = thisYearRecords.reduce((s, r) => s + (r.tithe_cad || 0), 0);
     const upcomingEvents = activities.filter(a => a.type === "meeting" && !a.completed);
 
-    const welcomeText = lang === "vi" ? "Chào mừng đến ChurchCRM" : lang === "fr" ? "Bienvenue dans ChurchCRM" : "Welcome to EffectiveCRM";
+    const welcomeText = lang === "vi" ? "Chào mừng đến ChurchCRM" : "Welcome to EffectiveCRM";
     const subText = lang === "vi"
         ? "Quản lý hội thánh của bạn một cách hiệu quả và ân hậu."
-        : lang === "fr"
-            ? "Gérez votre église efficacement et avec grâce."
-            : "Manage your church effectively and gracefully.";
+        : "Manage your church effectively and gracefully.";
 
     const L = {
-        totalMembers: lang === "vi" ? "Tổng thành viên" : lang === "fr" ? "Total membres" : "Total Members",
-        groups: lang === "vi" ? "Nhóm / Tế bào" : lang === "fr" ? "Groupes" : "Groups",
-        upcomingEvents: lang === "vi" ? "Sự kiện sắp tới" : lang === "fr" ? "Événements" : "Upcoming Events",
-        avgAttendance: lang === "vi" ? "TB Điểm danh/tuần" : lang === "fr" ? "Présence moy./sem." : "Avg Attendance/wk",
-        tithe: lang === "vi" ? "Dâng hiến" : lang === "fr" ? "Dîmes" : "Tithes",
-        visitors: lang === "vi" ? "Khách thăm" : lang === "fr" ? "Visiteurs" : "Visitors",
-        calendar: lang === "vi" ? "Lịch Hội Thánh" : lang === "fr" ? "Calendrier" : "Church Calendar",
-        noEvents: lang === "vi" ? "Chưa có sự kiện nào" : lang === "fr" ? "Aucun événement" : "No upcoming events",
-        year: lang === "vi" ? "Năm" : lang === "fr" ? "Année" : "Year",
+        totalMembers: lang === "vi" ? "Tổng thành viên" : "Total Members",
+        groups: lang === "vi" ? "Nhóm / Tế bào" : "Groups",
+        upcomingEvents: lang === "vi" ? "Sự kiện sắp tới" : "Upcoming Events",
+        avgAttendance: lang === "vi" ? "TB Điểm danh/tuần" : "Avg Attendance/wk",
+        tithe: lang === "vi" ? "Dâng hiến" : "Tithes",
+        visitors: lang === "vi" ? "Khách thăm" : "Visitors",
+        calendar: lang === "vi" ? "Lịch Hội Thánh" : "Church Calendar",
+        noEvents: lang === "vi" ? "Chưa có sự kiện nào" : "No upcoming events",
+        year: lang === "vi" ? "Năm" : "Year",
     };
 
     return (
@@ -216,7 +213,7 @@ export default function DashboardPage() {
                             <p className="text-sm text-slate-400 text-center py-6">{L.noEvents}</p>
                         ) : (
                             <div className="space-y-3">
-                                {upcomingEvents.slice(0, 6).map(e => (
+                                {upcomingEvents.slice(0, 6).map((e: any) => (
                                     <div key={e.id} className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
                                             <Calendar className="w-4 h-4 text-emerald-500" />
@@ -226,7 +223,7 @@ export default function DashboardPage() {
                                             {e.due_date && (
                                                 <p className="text-xs text-slate-400">
                                                     {new Date(e.due_date).toLocaleDateString(
-                                                        lang === "vi" ? "vi-VN" : lang === "fr" ? "fr-FR" : "en-US"
+                                                        lang === "vi" ? "vi-VN" : "en-US"
                                                     )}
                                                 </p>
                                             )}

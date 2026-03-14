@@ -4,43 +4,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, HandHeart } from "lucide-react";
 import { useLang } from "@/components/i18n/LanguageContext";
 
-const fmt = (v) => `$${Number(v).toLocaleString("en-CA", { minimumFractionDigits: 0 })}`;
+const fmt = (v: any) => `$${Number(v).toLocaleString("en-CA", { minimumFractionDigits: 0 })}`;
 
 // Group records by week or month
-function groupByPeriod(records, year, lang = "en", groupByWeek = false) {
-  const locale = lang === "vi" ? "vi-VN" : lang === "fr" ? "fr-FR" : "en-US";
-  const map = {};
+function groupByPeriod(records: any[], year: number, lang: string = "en", groupByWeek = false) {
+  const locale = lang === "vi" ? "vi-VN" : "en-US";
+  const map: Record<string, any> = {};
   records.forEach(r => {
     if (!r.date || !r.attendance) return;
     const d = new Date(r.date);
     if (year && d.getFullYear() !== year) return;
-    
+
     let key, label;
     if (groupByWeek) {
       // Group by week: YYYY-W##
       const jan4 = new Date(d.getFullYear(), 0, 4);
-      const dayDiff = (d - jan4) / (24 * 60 * 60 * 1000);
+      const dayDiff = (d.getTime() - jan4.getTime()) / (24 * 60 * 60 * 1000);
       const weekNum = Math.floor((dayDiff + jan4.getDay()) / 7) + 1;
       key = `${d.getFullYear()}-W${String(weekNum).padStart(2, "0")}`;
-      label = `${d.toLocaleDateString(locale, { month: "short" })} ${d.getDate()}`;
+      label = `${d.toLocaleDateString(locale as string, { month: "short" })} ${d.getDate()}`;
     } else {
       // Group by month
       key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      label = d.toLocaleDateString(locale, { month: "short", year: "numeric" });
+      label = d.toLocaleDateString(locale as string, { month: "short", year: "numeric" });
     }
-    
+
     if (!map[key]) map[key] = { key, label, attendance: 0, tithe: 0, count: 0 };
     map[key].attendance += r.attendance;
     map[key].tithe += r.tithe_cad || 0;
     map[key].count += 1;
   });
-  return Object.values(map).sort((a, b) => a.key.localeCompare(b.key)).map(m => ({
+  return Object.values(map).sort((a: any, b: any) => a.key.localeCompare(b.key)).map((m: any) => ({
     ...m,
     avgAttendance: Math.round(m.attendance / m.count),
   }));
 }
 
-export default function AttendanceChart({ records = [], year, compact = false, groupByWeek = true }) {
+export default function AttendanceChart({ records = [], year, compact = false, groupByWeek = true }: { records: any[], year: number, compact?: boolean, groupByWeek?: boolean }) {
   const { lang } = useLang();
   const monthlyData = useMemo(() => groupByPeriod(records, year, lang, groupByWeek), [records, year, lang, groupByWeek]);
 
@@ -51,16 +51,16 @@ export default function AttendanceChart({ records = [], year, compact = false, g
     : 0;
 
   const L = {
-    compactTitle: lang === "vi" ? "Điểm danh" : lang === "fr" ? "Présence" : "Attendance",
-    avgWeek: lang === "vi" ? "TB" : lang === "fr" ? "Moy" : "Avg",
-    week: lang === "vi" ? "/tuần" : lang === "fr" ? "/sem." : "/wk",
-    avgAttLabel: lang === "vi" ? "TB Điểm danh/tuần" : lang === "fr" ? "Présence moy./sem." : "Avg Attendance/wk",
-    totalOffering: lang === "vi" ? "Tổng dâng hiến" : lang === "fr" ? "Total dîmes" : "Total Tithes",
-    avgOffering: lang === "vi" ? "TB dâng hiến/tuần" : lang === "fr" ? "Dîme moy./sem." : "Avg Tithe/wk",
-    attByMonth: lang === "vi" ? "Điểm danh TB theo tháng" : lang === "fr" ? "Présence moy. par mois" : "Avg Attendance by Month",
-    offeringByMonth: lang === "vi" ? "Dâng hiến theo tháng" : lang === "fr" ? "Dîmes par mois" : "Tithes by Month",
-    tooltipAtt: lang === "vi" ? "TB điểm danh" : lang === "fr" ? "Présence moy." : "Avg attendance",
-    tooltipOffering: lang === "vi" ? "Dâng hiến" : lang === "fr" ? "Dîme" : "Tithe",
+    compactTitle: lang === "vi" ? "Điểm danh" : "Attendance",
+    avgWeek: lang === "vi" ? "TB" : "Avg",
+    week: lang === "vi" ? "/tuần" : "/wk",
+    avgAttLabel: lang === "vi" ? "TB Điểm danh/tuần" : "Avg Attendance/wk",
+    totalOffering: lang === "vi" ? "Tổng dâng hiến" : "Total Tithes",
+    avgOffering: lang === "vi" ? "TB dâng hiến/tuần" : "Avg Tithe/wk",
+    attByMonth: lang === "vi" ? "Điểm danh TB theo tháng" : "Avg Attendance by Month",
+    offeringByMonth: lang === "vi" ? "Dâng hiến theo tháng" : "Tithes by Month",
+    tooltipAtt: lang === "vi" ? "TB điểm danh" : "Avg attendance",
+    tooltipOffering: lang === "vi" ? "Dâng hiến" : "Tithe",
   };
 
   if (compact) {
@@ -176,7 +176,7 @@ export default function AttendanceChart({ records = [], year, compact = false, g
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip
                 formatter={(v) => [fmt(v), L.tooltipOffering]}
                 contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}

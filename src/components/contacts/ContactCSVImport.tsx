@@ -20,24 +20,24 @@ const FIELD_MAP = {
   status: ["status", "trạng thái"],
 };
 
-function parseCSV(text) {
+function parseCSV(text: string) {
   const lines = text.trim().split("\n");
   if (lines.length < 2) return [];
   const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, "").toLowerCase());
   return lines.slice(1).map(line => {
     const vals = line.split(",").map(v => v.trim().replace(/^"|"$/g, ""));
-    const row = {};
+    const row: Record<string, string> = {};
     headers.forEach((h, i) => { row[h] = vals[i] || ""; });
     return row;
   });
 }
 
-function mapRow(raw) {
-  const contact = {};
+function mapRow(raw: Record<string, string>) {
+  const contact: Record<string, any> = {};
   for (const [field, aliases] of Object.entries(FIELD_MAP)) {
     for (const alias of aliases) {
       if (raw[alias] !== undefined && raw[alias] !== "") {
-        if (field === "groups") {
+        if (field === "groups" && typeof raw[alias] === "string") {
           contact[field] = raw[alias].split(";").map(g => g.trim()).filter(Boolean);
         } else {
           contact[field] = raw[alias];
@@ -53,24 +53,32 @@ const SAMPLE_CSV = `first_name,last_name,email,phone,company,role,address,relati
 Nguyễn,Văn A,a@example.com,0901234567,Công ty ABC,Giám đốc,Hà Nội,client,email,Khách hàng VIP,VIP;Hà Nội,active
 Trần,Thị B,b@example.com,0987654321,Công ty XYZ,Kế toán,TP.HCM,colleague,zalo,,TP.HCM,active`;
 
-export default function ContactCSVImport({ open, onOpenChange, onImported }) {
-  const [rows, setRows] = useState([]);
-  const [errors, setErrors] = useState([]);
+interface ContactCSVImportProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onImported?: () => void;
+}
+
+export default function ContactCSVImport({ open, onOpenChange, onImported }: ContactCSVImportProps) {
+  const [rows, setRows] = useState<any[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
   const [done, setDone] = useState(false);
   const [importedCount, setImportedCount] = useState(0);
-  const fileRef = useRef();
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (e) => {
-    const file = e.target.files[0];
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const parsed = parseCSV(ev.target.result);
+      const result = ev.target?.result;
+      if (typeof result !== "string") return;
+      const parsed = parseCSV(result);
       const mapped = parsed.map(mapRow);
       const errs = mapped
         .map((r, i) => (!r.first_name || !r.last_name || !r.email) ? `Row ${i + 2}: missing first_name, last_name, or email` : null)
-        .filter(Boolean);
+        .filter((e): e is string => e !== null);
       setErrors(errs);
       setRows(mapped);
       setDone(false);

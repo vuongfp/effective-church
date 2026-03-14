@@ -31,9 +31,14 @@ const presets = {
   partner: { label: "Partner", className: "bg-violet-50 text-violet-700 border-violet-200" },
   former_customer: { label: "Former", className: "bg-slate-100 text-slate-600 border-slate-200" },
   inactive: { label: "Inactive", className: "bg-slate-100 text-slate-600 border-slate-200" },
-};
+} as Record<string, { label: string; className: string }>;
 
-export default function StatusBadge({ status, customLabel }) {
+interface StatusBadgeProps {
+  status: string;
+  customLabel?: string;
+}
+
+export default function StatusBadge({ status, customLabel }: StatusBadgeProps) {
   const preset = presets[status] || { label: status, className: "bg-slate-100 text-slate-600 border-slate-200" };
   return (
     <Badge variant="outline" className={`text-xs font-medium border ${preset.className}`}>

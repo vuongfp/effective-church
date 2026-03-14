@@ -1,6 +1,15 @@
 import React from "react";
 
-export default function StatCard({ label, value, icon: Icon, trend, trendLabel, color = "indigo" }) {
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon: React.ElementType;
+  trend?: number;
+  trendLabel?: string;
+  color?: "indigo" | "emerald" | "amber" | "rose" | "violet" | "sky";
+}
+
+export default function StatCard({ label, value, icon: Icon, trend, trendLabel, color = "indigo" }: StatCardProps) {
   const colors = {
     indigo: "bg-indigo-50 text-indigo-600",
     emerald: "bg-emerald-50 text-emerald-600",
@@ -25,7 +34,7 @@ export default function StatCard({ label, value, icon: Icon, trend, trendLabel, 
             </div>
           )}
         </div>
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors[color]}`}>
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors[color] || colors.indigo}`}>
           <Icon className="w-5 h-5" />
         </div>
       </div>

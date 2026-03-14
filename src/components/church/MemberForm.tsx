@@ -10,33 +10,16 @@ import { Badge } from "@/components/ui/badge";
 import FormModal from "../shared/FormModal";
 import { X } from "lucide-react";
 import { useLang } from "../i18n/LanguageContext";
+import { Member } from "@/types";
 
-const EMPTY = {
+const EMPTY: Member = {
   first_name: "", last_name: "", email: "", phone: "",
   sex: "", marital_status: "", birthday: "", baptism: false,
-  address: "", status: "active", notes: "", groups: [],
+  address: "", status: "active", notes: "", groups: [] as string[],
   profession: "", role: "", member_since: "", is_kid: false,
 };
 
-interface Member {
-  id?: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  sex: string;
-  marital_status: string;
-  birthday: string;
-  baptism: boolean;
-  address: string;
-  status: string;
-  notes: string;
-  groups: string[];
-  profession: string;
-  role: string;
-  member_since: string;
-  is_kid: boolean;
-}
+
 
 interface MemberFormProps {
   open: boolean;
@@ -66,7 +49,7 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
   }, [member, open]);
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Partial<Member>) => {
       if (member) {
         const { error } = await supabase.from('members').update(data).eq('id', member.id);
         if (error) throw error;
@@ -81,9 +64,9 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
     },
   });
 
-  const set = (key: keyof Member, val: any) => setForm(prev => ({ ...prev, [key]: val }));
+  const set = (key: keyof Member, val: unknown) => setForm(prev => ({ ...prev, [key]: val }));
 
-  const toggleGroup = (groupId) => {
+  const toggleGroup = (groupId: string) => {
     setForm(prev => {
       const current = prev.groups || [];
       if (current.includes(groupId)) return { ...prev, groups: current.filter(g => g !== groupId) };
@@ -91,9 +74,9 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
     });
   };
 
-  const removeGroup = (groupId) => setForm(prev => ({ ...prev, groups: (prev.groups || []).filter(g => g !== groupId) }));
+  const removeGroup = (groupId: string) => setForm(prev => ({ ...prev, groups: (prev.groups || []).filter(g => g !== groupId) }));
 
-  const getGroupName = (groupId) => {
+  const getGroupName = (groupId: string) => {
     const group = groups.find(g => g.id === groupId);
     return group ? group.name : groupId;
   };
@@ -101,30 +84,30 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
   const handleSubmit = () => mutation.mutate(form);
 
   const L = {
-    title: { en: member ? "Edit Member Profile" : "Add Member", vi: member ? "Sửa thành viên" : "Thêm thành viên", fr: member ? "Modifier profil du membre" : "Ajouter membre" },
-    firstName: { en: "First Name *", vi: "Tên *", fr: "Prénom *" },
-    lastName: { en: "Last Name *", vi: "Họ *", fr: "Nom *" },
-    phone: { en: "Phone", vi: "Điện thoại", fr: "Téléphone" },
-    sex: { en: "Gender", vi: "Giới tính", fr: "Genre" },
-    male: { en: "Male", vi: "Nam", fr: "Homme" },
-    female: { en: "Female", vi: "Nữ", fr: "Femme" },
-    marital: { en: "Marital Status", vi: "Hôn nhân", fr: "État civil" },
-    birthday: { en: "Birthday", vi: "Ngày sinh", fr: "Date de naissance" },
-    baptism: { en: "Baptism", vi: "Báp-têm", fr: "Baptême" },
-    baptized: { en: "Baptized", vi: "Đã báp-têm", fr: "Baptisé" },
-    notBaptized: { en: "Not yet baptized", vi: "Chưa báp-têm", fr: "Pas encore baptisé" },
-    address: { en: "Address", vi: "Địa chỉ", fr: "Adresse" },
-    profession: { en: "Profession", vi: "Nghề nghiệp", fr: "Profession" },
-    role: { en: "Role / Ministry", vi: "Vai trò / Chức vụ", fr: "Rôle / Ministère" },
-    memberSince: { en: "Member Since", vi: "Thành viên từ", fr: "Membre depuis" },
-    groups: { en: "Groups / Ministries", vi: "Nhóm / Tế bào", fr: "Groupes / Ministères" },
-    noGroups: { en: "No groups available", vi: "Chưa có nhóm", fr: "Aucun groupe" },
-    status: { en: "Status", vi: "Trạng thái", fr: "Statut" },
-    active: { en: "Active", vi: "Đang hoạt động", fr: "Actif" },
-    inactive: { en: "Inactive", vi: "Không hoạt động", fr: "Inactif" },
-    notes: { en: "Notes", vi: "Ghi chú", fr: "Notes" },
+    title: { en: member ? "Edit Member Profile" : "Add Member", vi: member ? "Sửa thành viên" : "Thêm thành viên" },
+    firstName: { en: "First Name *", vi: "Tên *" },
+    lastName: { en: "Last Name *", vi: "Họ *" },
+    phone: { en: "Phone", vi: "Điện thoại" },
+    sex: { en: "Gender", vi: "Giới tính" },
+    male: { en: "Male", vi: "Nam" },
+    female: { en: "Female", vi: "Nữ" },
+    marital: { en: "Marital Status", vi: "Hôn nhân" },
+    birthday: { en: "Birthday", vi: "Ngày sinh" },
+    baptism: { en: "Baptism", vi: "Báp-têm" },
+    baptized: { en: "Baptized", vi: "Đã báp-têm" },
+    notBaptized: { en: "Not yet baptized", vi: "Chưa báp-têm" },
+    address: { en: "Address", vi: "Địa chỉ" },
+    profession: { en: "Profession", vi: "Nghề nghiệp" },
+    role: { en: "Role / Ministry", vi: "Vai trò / Chức vụ" },
+    memberSince: { en: "Member Since", vi: "Thành viên từ" },
+    groups: { en: "Groups / Ministries", vi: "Nhóm / Tế bàoo" },
+    noGroups: { en: "No groups available", vi: "Chưa có nhóm" },
+    status: { en: "Status", vi: "Trạng thái" },
+    active: { en: "Active", vi: "Đang hoạt động" },
+    inactive: { en: "Inactive", vi: "Không hoạt động" },
+    notes: { en: "Notes", vi: "Ghi chú" },
   };
-  const lv = (key: keyof typeof L) => L[key]?.[lang as keyof (typeof L)['title']] || L[key]?.en || key;
+  const lv = (key: keyof typeof L) => (L[key] as any)?.[lang] || (L[key] as any)?.en || key;
 
   return (
     <FormModal
@@ -137,23 +120,23 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>{lv("firstName")}</Label>
-          <Input value={form.first_name} onChange={e => set("first_name", e.target.value)} />
+          <Input value={form.first_name || ""} onChange={e => set("first_name", e.target.value)} />
         </div>
         <div>
           <Label>{lv("lastName")}</Label>
-          <Input value={form.last_name} onChange={e => set("last_name", e.target.value)} />
+          <Input value={form.last_name || ""} onChange={e => set("last_name", e.target.value)} />
         </div>
       </div>
 
       <div>
         <Label>Email *</Label>
-        <Input type="email" value={form.email} onChange={e => set("email", e.target.value)} />
+        <Input type="email" value={form.email || ""} onChange={e => set("email", e.target.value)} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label>{lv("phone")}</Label>
-          <Input value={form.phone} onChange={e => set("phone", e.target.value)} />
+          <Input value={form.phone || ""} onChange={e => set("phone", e.target.value)} />
         </div>
         <div>
           <Label>{lv("sex")}</Label>
@@ -179,10 +162,10 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
             <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="none">—</SelectItem>
-              <SelectItem value="Single">{lang === "vi" ? "Độc thân" : lang === "fr" ? "Célibataire" : "Single"}</SelectItem>
-              <SelectItem value="Married">{lang === "vi" ? "Kết hôn" : lang === "fr" ? "Marié(e)" : "Married"}</SelectItem>
-              <SelectItem value="Widowed">{lang === "vi" ? "Góa" : lang === "fr" ? "Veuf/Veuve" : "Widowed"}</SelectItem>
-              <SelectItem value="Divorced">{lang === "vi" ? "Ly hôn" : lang === "fr" ? "Divorcé(e)" : "Divorced"}</SelectItem>
+              <SelectItem value="Single">{lang === "vi" ? "Độc thân" : "Single"}</SelectItem>
+              <SelectItem value="Married">{lang === "vi" ? "Kết hôn" : "Married"}</SelectItem>
+              <SelectItem value="Widowed">{lang === "vi" ? "Góa" : "Widowed"}</SelectItem>
+              <SelectItem value="Divorced">{lang === "vi" ? "Ly hôn" : "Divorced"}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -195,13 +178,13 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
         </div>
         <div>
           <Label>{lv("role")}</Label>
-          <Input value={form.role} onChange={e => set("role", e.target.value)} placeholder={lang === "vi" ? "Trưởng nhóm..." : "Worship leader..."} />
+          <Input value={form.role || ""} onChange={e => set("role", e.target.value)} placeholder={lang === "vi" ? "Trưởng nhóm..." : "Worship leader..."} />
         </div>
       </div>
 
       <div>
         <Label>{lv("address")}</Label>
-        <Input value={form.address} onChange={e => set("address", e.target.value)} />
+        <Input value={form.address || ""} onChange={e => set("address", e.target.value)} />
       </div>
 
       <div>
@@ -277,20 +260,20 @@ export default function MemberForm({ open, onOpenChange, member, onSaved }: Memb
 
       <div>
         <Label>{lv("status")}</Label>
-        <Select value={form.status} onValueChange={v => set("status", v)}>
+        <Select value={form.status || "active"} onValueChange={v => set("status", v)}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="active">{lv("active")}</SelectItem>
             <SelectItem value="inactive">{lv("inactive")}</SelectItem>
-            <SelectItem value="deceased">{lang === "vi" ? "Đã qua đời" : lang === "fr" ? "Décédé" : "Deceased"}</SelectItem>
-            <SelectItem value="transferred">{lang === "vi" ? "Đã chuyển đi" : lang === "fr" ? "Transféré" : "Transferred"}</SelectItem>
+            <SelectItem value="deceased">{lang === "vi" ? "Đã qua đời" : "Deceased"}</SelectItem>
+            <SelectItem value="transferred">{lang === "vi" ? "Đã chuyển đi" : "Transferred"}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div>
         <Label>{lv("notes")}</Label>
-        <Textarea value={form.notes} onChange={e => set("notes", e.target.value)} rows={3} />
+        <Textarea value={form.notes || ""} onChange={e => set("notes", e.target.value)} rows={3} />
       </div>
     </FormModal>
   );

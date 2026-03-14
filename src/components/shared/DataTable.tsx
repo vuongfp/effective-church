@@ -2,7 +2,21 @@ import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function DataTable({ columns, data, isLoading, onRowClick, emptyMessage = "No data found" }) {
+interface Column {
+  key: string;
+  label: string;
+  render?: (row: any) => React.ReactNode;
+}
+
+interface DataTableProps {
+  columns: Column[];
+  data: any[];
+  isLoading?: boolean;
+  onRowClick?: (row: any) => void;
+  emptyMessage?: string;
+}
+
+export default function DataTable({ columns, data, isLoading, onRowClick, emptyMessage = "No data found" }: DataTableProps) {
   if (isLoading) {
     return (
       <div className="space-y-3 p-4">

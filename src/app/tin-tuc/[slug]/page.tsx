@@ -42,9 +42,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
                         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm font-bold">✝</div>
                         <span className="font-bold text-slate-900 text-sm">Hội Thánh Tin Lành Toronto</span>
                     </Link>
-                    <Link href="/login" className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
-                        Đăng Nhập
-                    </Link>
                 </div>
             </header>
 
@@ -135,7 +132,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
             )}
 
             <footer className="bg-indigo-950 py-8 text-center text-sm text-indigo-400">
-                <p>© {new Date().getFullYear()} Hội Thánh Tin Lành Toronto · <Link href="/" className="hover:text-white">Trang Chủ</Link> · <Link href="/login" className="hover:text-white">Đăng Nhập</Link></p>
+                <p>© {new Date().getFullYear()} Hội Thánh Tin Lành Toronto · <Link href="/" className="hover:text-white">Trang Chủ</Link></p>
             </footer>
         </div>
     );
